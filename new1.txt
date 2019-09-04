@@ -1,0 +1,8 @@
+total 44
+-rw-r--r-- 1 sumit sumit     0 Sep  1 22:34 README.txt
+-rw-r--r-- 1 sumit sumit  1371 Sep  5 03:23 redirection.cpp
+-rwxr-xr-x 1 sumit sumit 13936 Sep  5 03:26 shell
+-rw-r--r-- 1 sumit sumit  1641 Sep  5 03:27 shell.cpp
+-rw-r--r-- 1 sumit sumit  2842 Sep  5 03:46 advshell.cpp
+-rwxr-xr-x 1 sumit sumit 14800 Sep  5 03:46 adv
+------x--- 1 sumit sumit     0 Sep  5 03:47 new1.txt
