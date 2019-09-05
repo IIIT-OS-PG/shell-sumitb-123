@@ -6,6 +6,7 @@
 #include <sys/wait.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #define argl 1024
 #define cmdl 100
 #define mx 100
@@ -35,41 +36,58 @@ void redirection(char *arr[],int rflag, int pflag){
 			else if(!strcmp(arr[len-2],">"))	rflag = 2;
 			if(rflag == 1){
             fdw = open(arr[len-1],O_WRONLY | O_CREAT | O_APPEND);
-            /*while(read(fdr,bfr,20)){
-                write(fdw,bfr,20);
-            }*/
-            //close(fdw);
             }
             if(rflag == 2){
-            fdw = open(arr[len-1],O_WRONLY | O_CREAT);
-            /*while(read(fdr,bfr,20)){
-                write(fdw,bfr,20);
-            }*/
-            //close(fdw);
+            fdw = open(arr[len-1],O_WRONLY | O_CREAT | O_TRUNC);
             }
-			//close(1);
+			chmod(arr[len-1],S_IRUSR | S_IWUSR);
 			dup2(fdw,1);
 			arr[len-2] = NULL;
 			execvp(arr[0],arr);
-			/*if(rflag == 1){
-			fdw = open(arr[len-1],O_WRONLY | O_CREAT | O_APPEND);
-			while(read(fdr,bfr,20)){
-				write(fdw,bfr,20);
-			}
 			close(fdw);
-			}
-			if(rflag == 2){
-			fdw = open(arr[len-1],O_WRONLY | O_CREAT);
-			while(read(fdr,bfr,20)){
-				write(fdw,bfr,20);
-			}
-			close(fdw);
-			}*/
 			
 		}
 
 }
 
+/*char *[] chararr(vector<string> &v){
+	int l = v.size()+1;
+	char *cmds[l];
+	int i = 0;
+	for(string s: v){
+		char *p = (char *)malloc(s.length()*sizeof(char));
+		cmds[i] = p;
+		i++;
+	}
+	cmds[i] = NULL;
+	return cmds;
+}*/
+
+/*void piping(char *st[]){
+	int i=0, index = -1,fd;
+	int fd[2],pid;
+	pipe(fd);
+	while(st[i]){
+		if(!strcmp(st[i],"|")){
+			if(index == -1){
+				st[i] = NULL;
+				pid = fork();
+				if(pid){
+					wait(&pid);
+
+				}
+				else{
+					close(fd[0]);
+					dup2(fd[1],1);
+
+				}
+				execvp(st[++index],st+index);
+				index = i;
+			}
+		}
+	}
+
+}*/
 
 int main(){
 	int i;
@@ -122,28 +140,31 @@ int main(){
 		}while(1);
 
 		if(i>0){
-		
-		st[i]=NULL;
-		i = 0;
-		while(st[i]) printf("%s ",st[i++]);
-		cout<<endl;
-		int pid = fork();
-		if(pid){
-			int wc = wait(&pid);
-	    }
-	    else{
-			if(rflag == 1 && pflag == 1){
+			st[i]=NULL;
+			i = 0;
+			//condition to exit from the shell
+			if(!strcmp(st[0],"exit")){
+                    cout<<"Bye !"<<endl;
+                    exit(0);
 			}
-			else if(rflag == 0 && pflag == 1){
-			}
-			else if(rflag == 1 && pflag == 0){
-				redirection(st,rflag,pflag);
-			}
-			else{
-	        	execvp(st[0],st);
-				exit(0);
-			}
-	    }
+			int pid = fork();
+			if(pid){
+				int wc = wait(&pid);
+	    	}
+	    	else{
+				
+				if(rflag == 1 && pflag == 1){
+				}
+				else if(rflag == 0 && pflag == 1){
+				}
+				else if(rflag == 1 && pflag == 0){
+					redirection(st,rflag,pflag);
+				}
+				else{
+	    	    	execvp(st[0],st);
+					exit(0);
+				}
+	    	}
 		}
 	}
 
