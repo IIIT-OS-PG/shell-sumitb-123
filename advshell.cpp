@@ -24,14 +24,13 @@ void showPrompt(){
 void redirection(char *arr[],int rflag, int pflag){
 	
 		int len = 0,i=0;
+		char bfr[ml];
+        int fdr,fdw;
 		while(arr[i]){
 			len++;
 			i++;
 		}
 		if(pflag == 0){
-			char bfr[ml];
-			int fdr,fdw;
-            
 			if(!strcmp(arr[len-2],">>")) rflag = 1;
 			else if(!strcmp(arr[len-2],">"))	rflag = 2;
 			if(rflag == 1){
@@ -46,6 +45,21 @@ void redirection(char *arr[],int rflag, int pflag){
 			execvp(arr[0],arr);
 			close(fdw);
 			
+		}
+		else if(pflag == 1){
+            if(!strcmp(arr[len-2],">>")) rflag = 1;
+            else if(!strcmp(arr[len-2],">"))    rflag = 2;
+            if(rflag == 1){
+            fdw = open(arr[len-1],O_WRONLY | O_CREAT | O_APPEND);
+            }
+            if(rflag == 2){
+            fdw = open(arr[len-1],O_WRONLY | O_CREAT | O_TRUNC);
+            }
+            chmod(arr[len-1],S_IRUSR | S_IWUSR);
+            dup2(fdw,1);
+            arr[len-2] = NULL;
+            execvp(arr[0],arr);
+            close(fdw);
 		}
 
 }
@@ -63,31 +77,52 @@ void redirection(char *arr[],int rflag, int pflag){
 	return cmds;
 }*/
 
-/*void piping(char *st[]){
-	int i=0, index = -1,fd;
-	int fd[2],pid;
-	pipe(fd);
+void piping(char *st[], int rflag,int pflag){
+	int i=0, index = 0,temp,count = 1,pid;
+	//int fd[2],pid,fd1[2];
+	//pipe(fd);
 	while(st[i]){
+	    //cout<<"pipe "<<endl;
+		//pipe(fd1);
+		int fd[2];
+		pipe(fd);
+		printf("%s ",st[i]);
 		if(!strcmp(st[i],"|")){
-			if(index == -1){
 				st[i] = NULL;
 				pid = fork();
 				if(pid){
 					wait(&pid);
-
+					close(fd[1]);
+					dup2(fd[0],0);
 				}
 				else{
+					//cout<<"child index "<<index<<endl;
+					//printf("cmd at index %s ",st[index]);
 					close(fd[0]);
 					dup2(fd[1],1);
-
+					close(fd[1]);
+					//execvp(st[index],st+index);
+					//execvp(cmd[0],cmd);
+					execvp(st[index],st+index);
+					_exit(0);
 				}
-				execvp(st[++index],st+index);
-				index = i;
-			}
+				//cout<<"before updating "<<index<<endl;
+				index = i+1;
+				//cout<<"after updating "<<index<<endl;
 		}
+		i++;
 	}
-
-}*/
+	//close(fd[1]);
+    //dup2(fd[0],0);
+	if(rflag == 1){
+		redirection(st+index,rflag,pflag);
+		_exit(0);
+	}
+	else{
+    	execvp(st[index],st+index);
+		_exit(0);
+	}
+}
 
 int main(){
 	int i;
@@ -154,8 +189,11 @@ int main(){
 	    	else{
 				
 				if(rflag == 1 && pflag == 1){
+						piping(st,rflag,pflag);
 				}
 				else if(rflag == 0 && pflag == 1){
+						piping(st,rflag,pflag);
+
 				}
 				else if(rflag == 1 && pflag == 0){
 					redirection(st,rflag,pflag);
