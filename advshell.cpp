@@ -11,7 +11,7 @@
 #define cmdl 100
 #define mx 100
 #define ml 1024
-
+char cdpath[mx];
 using namespace std;
 
 void showPrompt(){
@@ -19,6 +19,30 @@ void showPrompt(){
 	cout<<getenv("USER")<<"@";
 	gethostname(hostname,mx);
 	cout<<hostname<<"$ ";
+}
+
+void changeDirectory(char *st[]){
+		size_t sz = mx;
+		char *bfr = (char *)malloc(mx*sizeof(char));
+		if(st[1] == NULL || !strcmp(st[1],"~")){
+			char *path=(char *)malloc(mx*sizeof(char));
+			strcpy(path,getenv("HOME"));
+			strcpy(cdpath,getcwd(bfr,sz));
+			chdir(path);
+			free(path);
+		}
+		else if(!strcmp(st[1],"-")){
+			char *path=(char *)malloc(mx*sizeof(char));
+			strcpy(path,getcwd(bfr,sz));
+			chdir(cdpath);
+			strcpy(cdpath,path);
+			free(path);
+		}
+		else{
+			strcpy(cdpath,getcwd(bfr,sz));
+			chdir(st[1]);
+		}
+		free(bfr);
 }
 
 void redirection(char *arr[],int rflag, int pflag){
@@ -126,6 +150,7 @@ void piping(char *st[], int rflag,int pflag){
 
 int main(){
 	int i;
+	strcpy(cdpath,getenv("PWD"));
 	while(1){
 		i=0;	
 		showPrompt();
@@ -181,6 +206,9 @@ int main(){
 			if(!strcmp(st[0],"exit")){
                     cout<<"Bye !"<<endl;
                     exit(0);
+			}
+			if(!strcmp(st[0],"cd")){
+				changeDirectory(st);
 			}
 			int pid = fork();
 			if(pid){
