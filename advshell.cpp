@@ -10,7 +10,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include "shellconf.h"
+#include "header.h"
 #define argl 1024
 #define cmdl 100
 #define mx 100
@@ -18,171 +18,13 @@
 char cdpath[mx];
 using namespace std;
 
-/*void history(){
-
-
-}
-
-void record(char *cmd[]){
-	
-}*/
-/*void bashrc(char *str[]){
-	//string s[] = {"HOME","USER","PATH","PS1","HOSTNAME","HISTSIZE"};
-	setenv("PS1","custom",1);
-	ifstream f;
-	f.open(str[1]);
-	if(f){
-		char *rdl = NULL;
-		size_t sz = 0;
-		while(getline(f,&rdl)!=-1){
-			printf("%s\n",rdl);
-		}
-		f.close();
-	}
-	else{
-		cout<<"can't open the file"<<endl;
-	}
-}*/
 
 void showPrompt(){
-	//to display the prompt
-	//char* st[]={".myrc",NULL};
-	//bashrc(st);
 	char *cwd = (char *)malloc(mx*sizeof(char));
 	char hostname[mx];
 	cout<<getenv("USER")<<"@";
 	gethostname(hostname,mx);
 	cout<<hostname<<getcwd(cwd,mx)<<":~"<<getenv("PS1")<<"$ ";
-}
-
-void changeDirectory(char *st[]){
-		size_t sz = mx;
-		char *bfr = (char *)malloc(mx*sizeof(char));
-		if(st[1] == NULL || !strcmp(st[1],"~")){
-			char *path=(char *)malloc(mx*sizeof(char));
-			strcpy(path,getenv("HOME"));
-			strcpy(cdpath,getcwd(bfr,sz));
-			chdir(path);
-			setenv("PWD",path,1);
-			free(path);
-		}
-		else if(!strcmp(st[1],"-")){
-			char *path=(char *)malloc(mx*sizeof(char));
-			strcpy(path,getcwd(bfr,sz));
-			chdir(cdpath);
-			setenv("PWD",cdpath,1);
-			strcpy(cdpath,path);
-			free(path);
-		}
-		else{
-			strcpy(cdpath,getcwd(bfr,sz));
-			chdir(st[1]);
-			setenv("PWD",st[1],1);
-		}
-		free(bfr);
-}
-
-void redirection(char *arr[],int rflag, int pflag){
-	
-		int len = 0,i=0;
-		char bfr[ml];
-        int fdr,fdw;
-		while(arr[i]){
-			len++;
-			i++;
-		}
-		if(pflag == 0){
-			if(!strcmp(arr[len-2],">>")) rflag = 1;
-			else if(!strcmp(arr[len-2],">"))	rflag = 2;
-			if(rflag == 1){
-            fdw = open(arr[len-1],O_WRONLY | O_CREAT | O_APPEND);
-            }
-            if(rflag == 2){
-            fdw = open(arr[len-1],O_WRONLY | O_CREAT | O_TRUNC);
-            }
-			chmod(arr[len-1],S_IRUSR | S_IWUSR);
-			dup2(fdw,1);
-			arr[len-2] = NULL;
-			execvp(arr[0],arr);
-			close(fdw);
-			
-		}
-		else if(pflag == 1){
-            if(!strcmp(arr[len-2],">>")) rflag = 1;
-            else if(!strcmp(arr[len-2],">"))    rflag = 2;
-            if(rflag == 1){
-            fdw = open(arr[len-1],O_WRONLY | O_CREAT | O_APPEND);
-            }
-            if(rflag == 2){
-            fdw = open(arr[len-1],O_WRONLY | O_CREAT | O_TRUNC);
-            }
-            chmod(arr[len-1],S_IRUSR | S_IWUSR);
-            dup2(fdw,1);
-            arr[len-2] = NULL;
-            execvp(arr[0],arr);
-            close(fdw);
-		}
-
-}
-
-/*char* chararr(vector<string> &v){
-	int l = v.size()+1;
-	char *cmds[l];
-	int i = 0;
-	for(string s: v){
-		char *p = (char *)malloc(s.length()*sizeof(char));
-		cmds[i] = p;
-		i++;
-	}
-	cmds[i] = NULL;
-	return cmds;
-}*/
-
-void piping(char *st[], int rflag,int pflag){
-	int i=0, index = 0,temp,count = 1,pid;
-	//int fd[2],pid,fd1[2];
-	//pipe(fd);
-	while(st[i]){
-	    //cout<<"pipe "<<endl;
-		//pipe(fd1);
-		int fd[2];
-		pipe(fd);
-		printf("%s ",st[i]);
-		if(!strcmp(st[i],"|")){
-				st[i] = NULL;
-				pid = fork();
-				if(pid){
-					wait(&pid);
-					close(fd[1]);
-					dup2(fd[0],0);
-				}
-				else{
-					//cout<<"child index "<<index<<endl;
-					//printf("cmd at index %s ",st[index]);
-					close(fd[0]);
-					dup2(fd[1],1);
-					close(fd[1]);
-					//execvp(st[index],st+index);
-					//execvp(cmd[0],cmd);
-					execvp(st[index],st+index);
-					_exit(0);
-				}
-				//cout<<"before updating "<<index<<endl;
-				index = i+1;
-				//cout<<"after updating "<<index<<endl;
-		}
-		i++;
-	}
-	//close(fd[1]);
-    //dup2(fd[0],0);
-	if(rflag == 1){
-		redirection(st+index,rflag,pflag);
-		_exit(0);
-	}
-	else{
-    	execvp(st[index],st+index);
-		_exit(0);
-	}
 }
 
 int main(){
