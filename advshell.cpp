@@ -1,4 +1,7 @@
 #include<iostream>
+#include<bits/stdc++.h>
+#include<fstream>
+#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -7,6 +10,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include "shellconf.h"
 #define argl 1024
 #define cmdl 100
 #define mx 100
@@ -14,11 +18,41 @@
 char cdpath[mx];
 using namespace std;
 
+/*void history(){
+
+
+}
+
+void record(char *cmd[]){
+	
+}*/
+/*void bashrc(char *str[]){
+	//string s[] = {"HOME","USER","PATH","PS1","HOSTNAME","HISTSIZE"};
+	setenv("PS1","custom",1);
+	ifstream f;
+	f.open(str[1]);
+	if(f){
+		char *rdl = NULL;
+		size_t sz = 0;
+		while(getline(f,&rdl)!=-1){
+			printf("%s\n",rdl);
+		}
+		f.close();
+	}
+	else{
+		cout<<"can't open the file"<<endl;
+	}
+}*/
+
 void showPrompt(){
+	//to display the prompt
+	//char* st[]={".myrc",NULL};
+	//bashrc(st);
+	char *cwd = (char *)malloc(mx*sizeof(char));
 	char hostname[mx];
 	cout<<getenv("USER")<<"@";
 	gethostname(hostname,mx);
-	cout<<hostname<<"$ ";
+	cout<<hostname<<getcwd(cwd,mx)<<":~"<<getenv("PS1")<<"$ ";
 }
 
 void changeDirectory(char *st[]){
@@ -29,18 +63,21 @@ void changeDirectory(char *st[]){
 			strcpy(path,getenv("HOME"));
 			strcpy(cdpath,getcwd(bfr,sz));
 			chdir(path);
+			setenv("PWD",path,1);
 			free(path);
 		}
 		else if(!strcmp(st[1],"-")){
 			char *path=(char *)malloc(mx*sizeof(char));
 			strcpy(path,getcwd(bfr,sz));
 			chdir(cdpath);
+			setenv("PWD",cdpath,1);
 			strcpy(cdpath,path);
 			free(path);
 		}
 		else{
 			strcpy(cdpath,getcwd(bfr,sz));
 			chdir(st[1]);
+			setenv("PWD",st[1],1);
 		}
 		free(bfr);
 }
@@ -88,7 +125,7 @@ void redirection(char *arr[],int rflag, int pflag){
 
 }
 
-/*char *[] chararr(vector<string> &v){
+/*char* chararr(vector<string> &v){
 	int l = v.size()+1;
 	char *cmds[l];
 	int i = 0;
@@ -150,7 +187,12 @@ void piping(char *st[], int rflag,int pflag){
 
 int main(){
 	int i;
+	//setting the path for c - comand
 	strcpy(cdpath,getenv("PWD"));
+	//setitng the environment variables for my shell
+	char* st[]={"myrc",NULL};
+    bashrc(st);
+
 	while(1){
 		i=0;	
 		showPrompt();
