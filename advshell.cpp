@@ -19,13 +19,13 @@ char cdpath[mx];
 using namespace std;
 
 
-void showPrompt(){
+/*void showPrompt(){
 	char *cwd = (char *)malloc(mx*sizeof(char));
 	char hostname[mx];
 	cout<<getenv("USER")<<"@";
 	gethostname(hostname,mx);
 	cout<<hostname<<getcwd(cwd,mx)<<":~"<<getenv("PS1")<<"$ ";
-}
+}*/
 
 int main(){
 	int i;
