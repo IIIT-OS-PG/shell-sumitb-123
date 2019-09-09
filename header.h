@@ -1,3 +1,5 @@
+void setAlias(char *p[]);
+char* findAlias(char *p[]);
 void showPrompt();
 void changeDirectory(char *st[]);
 void redirection(char *arr[],int rflag, int pflag);

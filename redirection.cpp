@@ -39,7 +39,10 @@ void redirection(char *arr[],int rflag, int pflag){
 		chmod(arr[len-1],S_IRUSR | S_IWUSR);
 		dup2(fdw,1);
 		arr[len-2] = NULL;
-		execvp(arr[0],arr);
+		//execvp(arr[0],arr);
+		if(execvp(arr[0],arr)<0){
+            cout<<"error: please check"<<endl;
+        }
 		close(fdw);
 		
 	}
@@ -55,7 +58,10 @@ void redirection(char *arr[],int rflag, int pflag){
         chmod(arr[len-1],S_IRUSR | S_IWUSR);
         dup2(fdw,1);
         arr[len-2] = NULL;
-        execvp(arr[0],arr);
+		//execvp(arr[0],arr);
+        if(execvp(arr[0],arr)<0){
+			cout<<"error: please check"<<endl;
+		}
         close(fdw);
 	}
 

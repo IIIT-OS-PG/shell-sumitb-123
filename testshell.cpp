@@ -17,7 +17,7 @@
 #define ml 1024
 char cdpath[mx];
 using namespace std;
-map<string, string> ms;
+
 
 /*void showPrompt(){
 	char *cwd = (char *)malloc(mx*sizeof(char));
@@ -29,11 +29,11 @@ map<string, string> ms;
 
 int main(){
 	int i,count=0;
+	map<string,string> m;
 	//setting the path for c - comand
 	strcpy(cdpath,getenv("PWD"));
 	//setitng the environment variables for my shell
-	//char* st[]={"myrc",NULL};
-	char* st[2];st[0]="myrc";st[1]=NULL;
+	char* st[]={"myrc",NULL};
     bashrc(st);
 
 	while(1){
@@ -93,7 +93,6 @@ int main(){
                     cout<<"Bye !"<<endl;
                     exit(0);
 			}
-			//checking for change directory
 			if(!strcmp(st[0],"cd")){
 				if(count>2){
 					cout<<"too many arguments"<<endl;
@@ -101,24 +100,11 @@ int main(){
 				else{
 					changeDirectory(st);
 				}
-				continue;
+				//continue;
 			}
-			//checking for alias and setting
-			if(!strcmp(st[0],"alias")){
-                if(count>2){
-                    cout<<"too many arguments"<<endl;
-                }
-                else{
-                    setAlias(st);
-                }
-                continue;
-            }
-			//finding alias
-			/*int chkal = 0;
-		    while(st[chkal]){
-				st[chkal] = findAlias(st);
-				chkal++;
-			}*/	
+			/*if(!strcmp(st[0],"alias"){
+				char *cmd = srtok(st[1],"="); 
+			}*/
 			int pid = fork();
 			if(pid){
 				int wc = wait(&pid);
@@ -136,7 +122,7 @@ int main(){
 				}
 				else{
 	    	    	if(execvp(st[0],st)<0){
-						//cout<<"error: please check "<<endl;		
+						cout<<"error: please check "<<endl;		
 					}
 					exit(0);
 				}

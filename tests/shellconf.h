@@ -29,16 +29,21 @@ void bashrc(char *fp[]) {
 				if(tok == NULL) break;
 				else{
 					cmd[1]=tok;
-					//cout<<"cmd "<<cmd[1]<<endl;
+					cout<<"cmd "<<cmd[1]<<endl;
 				}
 			//free(st);	
 			}
-			//cout<<cmd[0]<<" "<<cmd[1]<<endl;
-			setenv(cmd[0],cmd[1],1);
+			cout<<cmd[0]<<" "<<cmd[1]<<endl;
+			//setenv(cmd[0],cmd[1],1);
 			s = "";
 		}
 		c= fgetc(f);
 	}
 	cmd[i]=NULL;
 	cout<<endl;
+}
+int main(){
+ char *fp[] = {"alias","ls=ls -lrt",NULL};
+ bashrc(fp);
+
 }
